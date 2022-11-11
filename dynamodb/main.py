@@ -23,8 +23,8 @@ def main():
 def import_to_dynamo(doc):
     response = dynamodb.import_table(
         S3BucketSource={
-            'S3Bucket': 'clamav-cits',
-            'S3KeyPrefix': 'users.csv'
+            'S3Bucket': doc['s3Bucket'],
+            'S3KeyPrefix': doc['s3KeyPrefix']
         },
         InputFormat='CSV',
         InputFormatOptions={
@@ -34,16 +34,16 @@ def import_to_dynamo(doc):
         },
         InputCompressionType='NONE',
         TableCreationParameters={
-            'TableName': 'test',
+            'TableName': doc["tableName"],
             'AttributeDefinitions': [
                 {
-                    'AttributeName': 'USER_ID',
+                    'AttributeName': doc['keyField'],
                     'AttributeType': 'S'
                 },
             ],
             'KeySchema': [
                 {
-                    'AttributeName': 'USER_ID',
+                    'AttributeName': doc['keyField'],
                     'KeyType': 'HASH'
                 },
             ],

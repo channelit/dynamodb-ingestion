@@ -1,16 +1,10 @@
 
-tableName: "user-vector"
-fileName:
-mappings:
-  - csvField: user
-    dbField: user
-  - csvField: purchase_vec
-    dbField: vector
+tableName: "test1"
+s3Bucket: "clamav-cits"
+keyField: "USER_ID"
+s3KeyPrefix: "users.csv"
 ---
-tableName: "user-vector"
-fileName:
-mappings:
-  - csvField: user
-    dbField: user
-  - csvField: purchase_vec
-    dbField: vector
+tableName: "test2"
+s3Bucket: "clamav-cits"
+keyField: "USER_ID"
+s3KeyPrefix: "users.csv"
