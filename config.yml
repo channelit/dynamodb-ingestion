@@ -1,0 +1,16 @@
+
+tableName: "user-vector"
+fileName:
+mappings:
+  - csvField: user
+    dbField: user
+  - csvField: purchase_vec
+    dbField: vector
+---
+tableName: "user-vector"
+fileName:
+mappings:
+  - csvField: user
+    dbField: user
+  - csvField: purchase_vec
+    dbField: vector
