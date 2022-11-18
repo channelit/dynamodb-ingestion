@@ -1,8 +1,10 @@
 #### Run lambda container locally
 ```shell
 pip freeze > requirements.txt
+docker buildx build --platform=linux/arm64 -t lambda-dynamodb-ingest .
 docker build --platform=linux/amd64 -t lambda-dynamodb-ingest .
-
+docker run -p 9000:8080  lambda-dynamodb-ingest:latest --name=lambda-dynamodb-ingest
+docker run -p 9000:8080 -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -e AWS_DEFAULT_REGION=$AWS_REGION lambda-dynamodb-ingest:latest
 ```
 
 ##### Push to AWS

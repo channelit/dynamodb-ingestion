@@ -1,15 +1,13 @@
 import boto3
 
-dynamodb = boto3.client('dynamodb')
 
-
-class Ingester:
+class IngesterService:
 
     def __int__(self):
-        self.dynamodb = boto3.client('dynamodb')
+        self.client = boto3.client('dynamodb')
 
-    def import_to_dynamo(self, s3_bucket: str, s3_key_prefix: str, table_name: str, key_field: str):
-        response = self.dynamodb.import_table(
+    def import_to_dynamo(self, client, s3_bucket: str, s3_key_prefix: str, table_name: str, key_field: str):
+        response = client.import_table(
             S3BucketSource={
                 'S3Bucket': s3_bucket,
                 'S3KeyPrefix': s3_key_prefix
@@ -38,6 +36,7 @@ class Ingester:
                 'BillingMode': 'PAY_PER_REQUEST'
             }
         )
+        print(response)
 
 
 if __name__ == '__main__':
