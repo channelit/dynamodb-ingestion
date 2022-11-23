@@ -1,5 +1,5 @@
 
-tableName: "test1"
+tableName: "test3"
 s3Bucket: "clamav-cits"
 keyField: "USER_ID"
 s3KeyPrefix: "users.csv"
