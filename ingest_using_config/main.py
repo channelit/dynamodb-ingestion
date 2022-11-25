@@ -22,9 +22,9 @@ def main():
         s3_key_prefix: str = doc['s3KeyPrefix'] or "none"
         table_name: str = doc["tableName"] or "none"
         key_field: str = doc['keyField'] or "none"
-        response = IngesterService("dynamo_import").import_to_dynamo(s3_bucket=s3_bucket, s3_key_prefix=s3_key_prefix,
-                                                                     table_name=table_name,
-                                                                     key_field=key_field)
+        response = IngesterService(table_name=table_name).import_to_dynamo(s3_bucket=s3_bucket,
+                                                                           s3_key_prefix=s3_key_prefix,
+                                                                           key_field=key_field, delete_if_exists=False)
         print(response)
         if 'ImportTableDescription' in response:
             print('Arn: {}'.format(response['ImportTableDescription']['ImportArn']))

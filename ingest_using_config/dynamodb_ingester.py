@@ -5,15 +5,19 @@ from botocore.exceptions import WaiterError
 
 class IngesterService:
 
-    def __init__(self, client_token: str):
+    def __init__(self, table_name: str):
         self.client = client('dynamodb')
-        self._client_token = client_token
+        self._client_token = table_name
+        self._table_name = table_name
 
-    def import_to_dynamo(self, s3_bucket: str, s3_key_prefix: str, table_name: str, key_field: str):
+    def import_to_dynamo(self, s3_bucket: str, s3_key_prefix: str, key_field: str, delete_if_exists: bool):
         response = ""
+        if delete_if_exists:
+            self.delete_dynamo_table_if_exists(table_name=self._table_name)
+
         try:
             response = self.client.import_table(
-                # ClientToken=self._client_token,
+                ClientToken=self._client_token,
                 S3BucketSource={
                     'S3Bucket': s3_bucket,
                     'S3KeyPrefix': s3_key_prefix
@@ -26,7 +30,7 @@ class IngesterService:
                 },
                 InputCompressionType='NONE',
                 TableCreationParameters={
-                    'TableName': table_name,
+                    'TableName': self._table_name,
                     'AttributeDefinitions': [
                         {
                             'AttributeName': key_field,
@@ -50,16 +54,20 @@ class IngesterService:
         if 'ImportTableDescription' in response:
             import_arn = response['ImportTableDescription']['ImportArn']
             print('Arn: {}'.format(import_arn))
-            print("Checking status")
+            print("Checking status of table {}".format(self._table_name))
             import_status = self.dynamo_import_status(import_arn)
             print("Import Status : {}".format(import_status))
-            self.wait_for_import(table_name=table_name)
+            print("Waiting creation of table {}".format(self._table_name))
+            self.wait_for_import(table_name=self._table_name)
+            import_status = self.dynamo_import_status(import_arn)
+            print("Import Status : {}".format(import_status))
         else:
             print('Error: {}'.format(response['Message']))
         return response
 
     def dynamo_import_status(self, import_arn: str):
         response = self.client.describe_import(ImportArn=import_arn)
+        print(response)
         status = response['ImportTableDescription']['ImportStatus']
         return status
 
@@ -94,12 +102,32 @@ class IngesterService:
                     'MaxAttempts': max_attempts
                 }
             )
-            print("Table deleted")
+            print("Deleted table {}".format(table_name))
         except WaiterError as e:
             if "Max attempts exceeded" in e.message:
                 print("Table not deleted after {} seconds.".format(delay * max_attempts))
             else:
                 print(e.message)
+
+    def delete_dynamo_table_if_exists(self, table_name: str):
+        response = ""
+        try:
+            response = self.client.delete_table(
+                TableName=table_name
+            )
+        except botocore.exceptions.ClientError as error:
+            response = error.response['Error']
+        except botocore.exceptions.ParamValidationError as error:
+            raise ValueError('The parameters you provided are incorrect: {}'.format(error))
+        print(response)
+        if 'TableDescription' in response:
+            delete_status = response['TableDescription']['TableStatus']
+            print("Delete Status : {}".format(delete_status))
+            print("Waiting to delete table {}".format(table_name))
+            self.wait_for_delete(table_name=table_name)
+        else:
+            print('Error: {}'.format(response['Message']))
+        return response
 
 
 if __name__ == '__main__':
