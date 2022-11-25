@@ -8,8 +8,7 @@ def handler(event, context):
     s3_key_prefix: str = event.get("s3KeyPrefix") or "none"
     table_name: str = event.get("tableName") or "none"
     key_field: str = event.get("keyField") or "none"
-    client = boto3.client('dynamodb')
-    response = IngesterService().import_to_dynamo(client=client, s3_bucket=s3_bucket, s3_key_prefix=s3_key_prefix,
+    response = IngesterService().import_to_dynamo(s3_bucket=s3_bucket, s3_key_prefix=s3_key_prefix,
                                                   table_name=table_name,
                                                   key_field=key_field)
     print(response)
