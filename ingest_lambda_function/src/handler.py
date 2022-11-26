@@ -1,5 +1,4 @@
 from dynamodb_ingester import IngesterService
-import boto3
 
 
 def handler(event, context):
