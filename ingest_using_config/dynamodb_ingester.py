@@ -1,3 +1,5 @@
+import uuid
+
 from boto3 import client
 import botocore
 from botocore.exceptions import WaiterError
@@ -14,10 +16,12 @@ class IngesterService:
         response = ""
         if delete_if_exists:
             self.delete_dynamo_table_if_exists(table_name=self._table_name)
+            self._client_token = uuid.UUID
+            print("Table {} will be imported with UUID {}".format(self._table_name, self._client_token))
 
         try:
             response = self.client.import_table(
-                ClientToken=self._client_token,
+                # ClientToken=self._client_token,
                 S3BucketSource={
                     'S3Bucket': s3_bucket,
                     'S3KeyPrefix': s3_key_prefix

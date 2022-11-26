@@ -24,7 +24,7 @@ def main():
         key_field: str = doc['keyField'] or "none"
         response = IngesterService(table_name=table_name).import_to_dynamo(s3_bucket=s3_bucket,
                                                                            s3_key_prefix=s3_key_prefix,
-                                                                           key_field=key_field, delete_if_exists=False)
+                                                                           key_field=key_field, delete_if_exists=True)
         print(response)
         if 'ImportTableDescription' in response:
             print('Arn: {}'.format(response['ImportTableDescription']['ImportArn']))
